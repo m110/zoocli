@@ -10,6 +10,7 @@ setup(name='zoocli',
       packages=find_packages(exclude=['tests']),
       scripts=['scripts/zoocli'],
       data_files=[('/etc/zoocli', ['zoocli.example.conf'])],
+      requires=['kazoo'],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
