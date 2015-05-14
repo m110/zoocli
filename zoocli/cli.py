@@ -34,6 +34,7 @@ class ZooCLI(object):
         self._commands_map = {
             'ls': self.ls,
             'cd': self.cd,
+            'get': self.get,
             'help': self.help,
             'exit': self.exit,
         }
@@ -111,6 +112,12 @@ class ZooCLI(object):
         # No exception means correct path
         self._zookeeper.list(path)
         self._current_path = path
+
+    def get(self, path=None):
+        path = format_path(self._current_path, path, default=ROOT_PATH)
+
+        data = self._zookeeper.get(path)
+        return data.decode('utf-8')
 
     def help(self, parser, all_commands, subject):
         if subject:

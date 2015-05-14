@@ -27,6 +27,9 @@ class Args(object):
         cd = self._add_command("cd", "change current path")
         cd.add_argument("path", nargs="?", default=None,  help="node path (defaults to /)")
 
+        get = self._add_command("get", "get node's data")
+        get.add_argument("path", nargs="?", default=None,  help="node path (defaults to current")
+
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)
         help.add_argument("subject", nargs="?", default=None)

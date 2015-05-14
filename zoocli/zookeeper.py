@@ -22,3 +22,10 @@ class ZooKeeper(object):
             return self._zookeeper.get_children(path)
         except NoNodeError:
             raise InvalidPath("No such node: {}".format(path))
+
+    def get(self, path):
+        try:
+            value, _ = self._zookeeper.get(path)
+            return value
+        except NoNodeError:
+            raise InvalidPath("No such node: {}".format(path))

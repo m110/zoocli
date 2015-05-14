@@ -10,6 +10,7 @@ class Completer(object):
         self._completions = {
             'ls': self.ls,
             'cd': self.ls,
+            'get': self.ls,
         }
 
     def complete(self, text, state):
