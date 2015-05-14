@@ -35,6 +35,7 @@ class ZooCLI(object):
             'ls': self.ls,
             'cd': self.cd,
             'get': self.get,
+            'set': self.set,
             'help': self.help,
             'exit': self.exit,
         }
@@ -117,7 +118,19 @@ class ZooCLI(object):
         path = format_path(self._current_path, path, default=ROOT_PATH)
 
         data = self._zookeeper.get(path)
-        return data.decode('utf-8')
+        return data
+
+    def set(self, path=None, data=None):
+        if not path:
+            raise CLIException("Missing node path")
+
+        if not data:
+            raise CLIException("Missing data")
+
+        path = format_path(self._current_path, path, default=ROOT_PATH)
+
+        self._zookeeper.set(path, data)
+        self.log("Set {} data: {}".format(path, data))
 
     def help(self, parser, all_commands, subject):
         if subject:

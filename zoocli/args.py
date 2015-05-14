@@ -30,6 +30,10 @@ class Args(object):
         get = self._add_command("get", "get node's data")
         get.add_argument("path", nargs="?", default=None,  help="node path (defaults to current")
 
+        set = self._add_command("set", "set node's data")
+        set.add_argument("path", nargs="?", default=None,  help="node path")
+        set.add_argument("data", nargs="?", default=None,  help="data to set")
+
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)
         help.add_argument("subject", nargs="?", default=None)

@@ -11,6 +11,7 @@ class Completer(object):
             'ls': self.ls,
             'cd': self.ls,
             'get': self.ls,
+            'set': self.ls,
         }
 
     def complete(self, text, state):
