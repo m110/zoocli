@@ -1,6 +1,7 @@
 import argparse
 from collections import namedtuple
 
+from zoocli.config import config
 from zoocli.exceptions import UnknownCommand
 
 Command = namedtuple("Command", ['name', 'parser'])
@@ -33,6 +34,9 @@ class Args(object):
         set = self._add_command("set", "set node's data")
         set.add_argument("path", nargs="?", default=None,  help="node path")
         set.add_argument("data", nargs="?", default=None,  help="data to set")
+
+        editor = self._add_command(config['zoocli']['editor'], "edit node's data in the best editor possible")
+        editor.add_argument("path", nargs="?", help="node to be edited")
 
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)

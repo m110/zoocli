@@ -1,6 +1,7 @@
 import os
 import shlex
 import atexit
+import tempfile
 import warnings
 import readline
 import traceback
@@ -37,6 +38,7 @@ class ZooCLI(object):
             'cd': self.cd,
             'get': self.get,
             'set': self.set,
+            config['zoocli']['editor']: self.editor,
             'help': self.help,
             'exit': self.exit,
         }
@@ -132,6 +134,27 @@ class ZooCLI(object):
 
         self._zookeeper.set(path, data)
         self.log("Set {} data: {}".format(path, data))
+
+    def editor(self, path):
+        path = format_path(self._current_path, path)
+        data = self._zookeeper.get(path)
+
+        tmp_file = tempfile.mktemp()
+
+        with open(tmp_file, 'w') as file:
+            file.write(data)
+
+        command = "{} {}".format(config['zoocli']['editor'], tmp_file)
+        exit_status = os.system(command)
+
+        if not exit_status:
+            self.log("Updating: {}".format(path))
+
+            with open(tmp_file, 'r') as file:
+                new_data = file.read().rstrip()
+                self._zookeeper.set(path, new_data)
+
+        os.unlink(tmp_file)
 
     def help(self, parser, all_commands, subject):
         if subject:

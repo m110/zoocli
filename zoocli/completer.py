@@ -7,12 +7,7 @@ class Completer(object):
 
     def __init__(self, cli):
         self._cli = cli
-        self._completions = {
-            'ls': self.ls,
-            'cd': self.ls,
-            'get': self.ls,
-            'set': self.ls,
-        }
+        self._completions = {}
 
     def complete(self, text, state):
         completions = []
@@ -22,9 +17,8 @@ class Completer(object):
         if ' ' in buffer.lstrip():
             command, kwargs = self._cli.parse(buffer.split())
 
-            if command in self._completions:
-                method = self._completions[command]
-                completions = method(**kwargs)
+            method = self._completions.get(command, self.ls)
+            completions = method(**kwargs)
         else:
             completions = [command.name for command in self._cli.commands]
 
