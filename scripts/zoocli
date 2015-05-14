@@ -1,0 +1,20 @@
+#!/usr/bin/python3
+import sys
+
+from zoocli.config import load_config
+load_config()
+
+from zoocli.cli import ZooCLI
+
+
+def main():
+    cli = ZooCLI()
+
+    if len(sys.argv) > 1:
+        return cli.execute(sys.argv[1:])
+    else:
+        return cli.run()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
