@@ -38,6 +38,17 @@ class Args(object):
         editor = self._add_command(config['zoocli']['editor'], "edit node's data in the best editor possible")
         editor.add_argument("path", nargs="?", help="node to be edited")
 
+        create = self._add_command("create", "create new node")
+        create.add_argument("path", nargs="?", default=None,  help="node path")
+        create.add_argument("-e", action="store_true", help="ephemeral", dest="ephemeral")
+        create.add_argument("-p", action="store_true", help="make parent nodes if needed", dest="makepath")
+        create.add_argument("-s", action="store_true", help="sequence", dest="sequence")
+        create.add_argument("data", nargs="?", default=None,  help="data to set")
+
+        rm = self._add_command("rm", "remove node")
+        rm.add_argument("-r", action="store_true", help="recursive", dest="recursive")
+        rm.add_argument("path", nargs="?", default=None,  help="node path")
+
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)
         help.add_argument("subject", nargs="?", default=None)
