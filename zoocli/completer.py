@@ -34,7 +34,7 @@ class Completer(object):
         else:
             return None
 
-    def ls(self, path=None):
+    def ls(self, path=None, **kwargs):
         if path and not path.endswith(SEPARATOR):
             # List one level up
             absolute = path.startswith(ROOT_PATH)
@@ -42,4 +42,4 @@ class Completer(object):
             if absolute:
                 path = ROOT_PATH + path
 
-        return self._cli.ls(path).split()
+        return self._cli.ls(path=path).split()
