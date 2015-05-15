@@ -39,6 +39,8 @@ class ZooCLI(object):
             'get': self.get,
             'set': self.set,
             config['zoocli']['editor']: self.editor,
+            'create': self.create,
+            'rm': self.rm,
             'help': self.help,
             'exit': self.exit,
         }
@@ -155,6 +157,24 @@ class ZooCLI(object):
                 self._zookeeper.set(path, new_data)
 
         os.unlink(tmp_file)
+
+    def create(self, path=None, data=None, ephemeral=False, sequence=False, makepath=False):
+        if not path:
+            raise CLIException("Missing node path")
+
+        path = format_path(self._current_path, path, default=ROOT_PATH)
+
+        self._zookeeper.create(path, data, ephemeral, sequence, makepath)
+        self.log("Created: {}".format(path))
+
+    def rm(self, path=None, recursive=False):
+        if not path:
+            raise CLIException("Missing node path")
+
+        path = format_path(self._current_path, path, default=ROOT_PATH)
+
+        self._zookeeper.delete(path, recursive)
+        self.log("Removed: {}".format(path))
 
     def help(self, parser, all_commands, subject):
         if subject:

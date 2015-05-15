@@ -41,7 +41,7 @@ class Args(object):
         create = self._add_command("create", "create new node")
         create.add_argument("path", nargs="?", default=None,  help="node path")
         create.add_argument("-e", action="store_true", help="ephemeral", dest="ephemeral")
-        create.add_argument("-p", action="store_true", help="make parent nodes if needed", dest="makepath")
+        create.add_argument("-p", action="store_true", help="create parent nodes if needed", dest="makepath")
         create.add_argument("-s", action="store_true", help="sequence", dest="sequence")
         create.add_argument("data", nargs="?", default=None,  help="data to set")
 

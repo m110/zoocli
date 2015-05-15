@@ -1,5 +1,5 @@
 from kazoo.client import KazooClient
-from kazoo.exceptions import NoNodeError, NodeExistsError
+from kazoo.exceptions import NoNodeError, NodeExistsError, NotEmptyError
 
 from zoocli.config import config
 from zoocli.exceptions import InvalidPath
@@ -56,3 +56,5 @@ class ZooKeeper(object):
             self._zookeeper.delete(path, recursive=recursive)
         except NoNodeError:
             raise InvalidPath("No such node: {}".format(path))
+        except NotEmptyError:
+            raise InvalidPath("Node contains sub-nodes")
