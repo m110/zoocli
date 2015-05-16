@@ -58,3 +58,10 @@ class ZooKeeper(object):
             raise InvalidPath("No such node: {}".format(path))
         except NotEmptyError:
             raise InvalidPath("Node contains sub-nodes")
+
+    def stat(self, path):
+        try:
+            _, stat = self._zookeeper.get(path)
+            return stat
+        except NoNodeError:
+            raise InvalidPath("No such node: {}".format(path))

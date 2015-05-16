@@ -49,6 +49,9 @@ class Args(object):
         rm.add_argument("-r", action="store_true", help="recursive", dest="recursive")
         rm.add_argument("path", nargs="?", default=None,  help="node path")
 
+        stat = self._add_command("stat", "get node's details")
+        stat.add_argument("path", nargs="?", default=None,  help="node path (defaults to current")
+
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)
         help.add_argument("subject", nargs="?", default=None)

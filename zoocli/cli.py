@@ -12,6 +12,7 @@ from zoocli.exceptions import UnknownCommand, CLIException
 from zoocli.zookeeper import ZooKeeper
 from zoocli.completer import Completer
 from zoocli.paths import ROOT_PATH, format_path
+from zoocli.utils import timestamp_to_date
 
 warnings.simplefilter("ignore")
 
@@ -41,6 +42,7 @@ class ZooCLI(object):
             config['zoocli']['editor']: self.editor,
             'create': self.create,
             'rm': self.rm,
+            'stat': self.stat,
             'help': self.help,
             'exit': self.exit,
         }
@@ -175,6 +177,35 @@ class ZooCLI(object):
 
         self._zookeeper.delete(path, recursive)
         self.log("Removed: {}".format(path))
+
+    def stat(self, path=None):
+        path = format_path(self._current_path, path, default=ROOT_PATH)
+
+        stat = self._zookeeper.stat(path)
+
+        lines = ["Created: {created} by session id: {created_id}",
+                 "Modified: {modified} by session id: {modified_id}",
+                 "Children count: {children}",
+                 "Data length: {data_length}",
+                 "Ephemeral owner: {owner}",
+                 "Version: {version}",
+                 "ACL version: {aversion}",
+                 "Children version: {cversion}",
+                 "pzxid: {pzxid}"]
+
+        return "\n".join(lines).format(
+            version=stat.version,
+            aversion=stat.acl_version,
+            cversion=stat.children_version,
+            created=timestamp_to_date(stat.created),
+            created_id=stat.creation_transaction_id,
+            modified=timestamp_to_date(stat.last_modified),
+            modified_id=stat.last_modified_transaction_id,
+            owner=stat.owner_session_id,
+            data_length=stat.data_length,
+            children=stat.children_count,
+            pzxid=stat.pzxid,
+        )
 
     def help(self, parser, all_commands, subject):
         if subject:
