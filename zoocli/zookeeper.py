@@ -1,8 +1,20 @@
 from kazoo.client import KazooClient
-from kazoo.exceptions import NoNodeError, NodeExistsError, NotEmptyError
+from kazoo.exceptions import NoNodeError, NodeExistsError, NotEmptyError, InvalidACLError
+from kazoo.security import make_acl, make_digest_acl
 
 from zoocli.config import config
 from zoocli.exceptions import InvalidPath
+
+PERMS_MAP = {
+    'a': 'admin',
+    'c': 'create',
+    'd': 'delete',
+    'r': 'read',
+    'w': 'write',
+}
+
+def get_permissions(permissions):
+    return {PERMS_MAP[perm]: True for perm in permissions}
 
 
 class ZooKeeper(object):
@@ -65,3 +77,40 @@ class ZooKeeper(object):
             return stat
         except NoNodeError:
             raise InvalidPath("No such node: {}".format(path))
+
+    def get_acl(self, path):
+        try:
+            acl, _ = self._zookeeper.get_acls(path)
+            return acl
+        except NoNodeError:
+            raise InvalidPath("No such node: {}".format(path))
+
+    def add_acl(self, path, permissions, scheme, id):
+        perms = get_permissions(permissions)
+
+        if scheme == "digest":
+            username, password = id.split(":")
+            acl = make_digest_acl(username, password, **perms)
+        else:
+            acl = make_acl(scheme, id, **perms)
+
+        current_acls = self.get_acl(path)
+        current_acls.append(acl)
+
+        try:
+            self._zookeeper.set_acls(path, current_acls)
+        except NoNodeError:
+            raise InvalidPath("No such node: {}".format(path))
+        except InvalidACLError as exc:
+            raise InvalidPath("Invalid ACL format: {}".format(str(exc)))
+
+    def delete_acl(self, path, index):
+        current_acls = self.get_acl(path)
+        deleted = current_acls.pop(index)
+
+        try:
+            self._zookeeper.set_acls(path, current_acls)
+        except NoNodeError:
+            raise InvalidPath("No such node: {}".format(path))
+
+        return deleted

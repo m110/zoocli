@@ -59,7 +59,8 @@ baz
 * `rm [-r] <path>` - remove node
 * `stat <path>` - get detailed information about node
 * `getacl <path>` - get node's ACL
-* `setacl <path> <acl>` - set ACL on node
+* `addacl <path> <permissions> <scheme> <id>` - add ACL to node
+* `rmacl <path> <index>` - delete node's ACL
 
 # Configuration
 

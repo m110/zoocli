@@ -43,6 +43,9 @@ class ZooCLI(object):
             'create': self.create,
             'rm': self.rm,
             'stat': self.stat,
+            'getacl': self.getacl,
+            'addacl': self.addacl,
+            'rmacl': self.rmacl,
             'help': self.help,
             'exit': self.exit,
         }
@@ -206,6 +209,39 @@ class ZooCLI(object):
             children=stat.children_count,
             pzxid=stat.pzxid,
         )
+
+    def getacl(self, path=None):
+        path = format_path(self._current_path, path)
+        current_acl = self._zookeeper.get_acl(path)
+
+        lines = []
+        for i, acl in enumerate(current_acl):
+            lines.append("{}: {} {} ({})".format(i,
+                                                 acl.id.scheme,
+                                                 acl.id.id,
+                                                 ', '.join(acl.acl_list)))
+
+        return "\n".join(lines)
+
+    def addacl(self, permissions=None, path=None, scheme=None, id=None):
+        if not path:
+            raise CLIException("Missing node path")
+
+        path = format_path(self._current_path, path)
+        self._zookeeper.add_acl(path, permissions, scheme, id)
+
+        self.log("Added ACL to {}: {}:{} ({})".format(path, scheme, id, permissions))
+
+    def rmacl(self, path=None, index=None):
+        if not path:
+            raise CLIException("Missing node path")
+
+        index = int(index)
+
+        path = format_path(self._current_path, path)
+        deleted = self._zookeeper.delete_acl(path, index)
+
+        self.log("Deleted ACL from {}: {} {}".format(path, deleted.id.scheme, deleted.id.id))
 
     def help(self, parser, all_commands, subject):
         if subject:

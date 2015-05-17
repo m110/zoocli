@@ -52,6 +52,19 @@ class Args(object):
         stat = self._add_command("stat", "get node's details")
         stat.add_argument("path", nargs="?", default=None,  help="node path (defaults to current")
 
+        getacl = self._add_command("getacl", "show node's ACL")
+        getacl.add_argument("path", nargs="?", default=None,  help="node path (defaults to current")
+
+        addacl = self._add_command("addacl", "add new ACL for node")
+        addacl.add_argument("path", nargs="?", default=None,  help="node path")
+        addacl.add_argument("permissions", nargs="?", default=None,  help="ACL permissions")
+        addacl.add_argument("scheme", nargs="?", default=None,  help="ACL scheme")
+        addacl.add_argument("id", nargs="?", default=None,  help="ACL id")
+
+        rmacl = self._add_command("rmacl", "remove node's ACL")
+        rmacl.add_argument("path", nargs="?", default=None,  help="node path")
+        rmacl.add_argument("index", nargs="?", default=None, help="ACL index")
+
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)
         help.add_argument("subject", nargs="?", default=None)
