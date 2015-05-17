@@ -122,7 +122,7 @@ class ZooCLI(object):
         self._current_path = path
 
     def get(self, path=None):
-        path = format_path(self._current_path, path, default=ROOT_PATH)
+        path = format_path(self._current_path, path)
 
         data = self._zookeeper.get(path)
         return data
@@ -134,7 +134,7 @@ class ZooCLI(object):
         if not data:
             raise CLIException("Missing data")
 
-        path = format_path(self._current_path, path, default=ROOT_PATH)
+        path = format_path(self._current_path, path)
 
         self._zookeeper.set(path, data)
         self.log("Set {} data: {}".format(path, data))
@@ -164,7 +164,7 @@ class ZooCLI(object):
         if not path:
             raise CLIException("Missing node path")
 
-        path = format_path(self._current_path, path, default=ROOT_PATH)
+        path = format_path(self._current_path, path)
 
         self._zookeeper.create(path, data, ephemeral, sequence, makepath)
         self.log("Created: {}".format(path))
@@ -173,13 +173,13 @@ class ZooCLI(object):
         if not path:
             raise CLIException("Missing node path")
 
-        path = format_path(self._current_path, path, default=ROOT_PATH)
+        path = format_path(self._current_path, path)
 
         self._zookeeper.delete(path, recursive)
         self.log("Removed: {}".format(path))
 
     def stat(self, path=None):
-        path = format_path(self._current_path, path, default=ROOT_PATH)
+        path = format_path(self._current_path, path)
 
         stat = self._zookeeper.stat(path)
 
