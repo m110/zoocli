@@ -79,6 +79,9 @@ verbose = off
 [zookeeper]
 # In case of more hosts, use comma-separated values.
 hosts = zk1:2181,zk2:2181
+# Optional credentials
+user =
+password =
 ```
 
 # Tips

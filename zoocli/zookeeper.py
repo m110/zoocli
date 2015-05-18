@@ -23,6 +23,11 @@ class ZooKeeper(object):
         self._zookeeper = KazooClient(hosts=config['zookeeper']['hosts'])
         self._zookeeper.start()
 
+        user = config['zookeeper']['user']
+        password = config['zookeeper']['password']
+        if user and password:
+            self._zookeeper.add_auth('digest', '{}:{}'.format(user, password))
+
     def stop(self):
         if self._zookeeper:
             self._zookeeper.stop()
