@@ -86,3 +86,35 @@ hosts = zk1:2181,zk2:2181
 ## Batch mode
 
 Any command can be passed directly as arguments to zoocli, which will exit just after after executing it. If you run it without arguments, you will get to interactive mode (preferable choice in most cases).
+
+# Examples
+
+Adding ACLs:
+
+```
+[/]> create any_node
+Created: /any_node
+
+[/]> addacl /any_node cdrw digest admin:password
+Added ACL to /any_node: digest:admin:password (cdrw)
+
+[/]> addacl /any_node rw ip 127.0.0.1
+Added ACL to /any_node: ip:127.0.0.1 (rw)
+
+[/]> addacl /any_node r world anyone
+Added ACL to /any_node: world:anyone (r)
+
+[/]> getacl /any_node
+0: world anyone (ALL)
+1: digest admin:bjkZ9W+M82HUZ9xb8/Oy4cmJGfg= (READ, WRITE, CREATE, DELETE)
+2: ip 127.0.0.1 (READ, WRITE)
+3: world anyone (READ)
+
+[/]> rmacl /any_node 0
+Deleted ACL from /any_node: world anyone
+
+[/]> getacl /any_node
+0: digest admin:bjkZ9W+M82HUZ9xb8/Oy4cmJGfg= (READ, WRITE, CREATE, DELETE)
+1: ip 127.0.0.1 (READ, WRITE)
+2: world anyone (READ)
+```
