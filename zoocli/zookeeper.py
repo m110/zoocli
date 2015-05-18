@@ -38,7 +38,12 @@ class ZooKeeper(object):
     def get(self, path):
         try:
             value, _ = self._zookeeper.get(path)
-            return value.decode('utf-8')
+            if value:
+                value = value.decode('utf-8')
+            else:
+                value = ""
+
+            return value
         except NoNodeError:
             raise InvalidPath("No such node: {}".format(path))
 
@@ -51,6 +56,8 @@ class ZooKeeper(object):
     def create(self, path, data=None, ephemeral=False, sequence=False, makepath=False):
         if data:
             data = data.encode()
+        else:
+            data = b""
 
         try:
             self._zookeeper.create(path,
