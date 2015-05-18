@@ -3,7 +3,7 @@ import atexit
 import tempfile
 
 from zoocli.config import config
-from zoocli.exceptions import UnknownCommand, CLIException
+from zoocli.exceptions import UnknownCommand, CLIException, MissingArgument
 from zoocli.paths import ROOT_PATH, format_path
 from zoocli.utils import timestamp_to_date
 from zoocli.zookeeper import ZooKeeper
@@ -37,7 +37,7 @@ class ZooCLICommands(Commands):
         atexit.register(self._zookeeper.stop)
 
     @command
-    def ls(self, long=False, path=None):
+    def ls(self, path=None, long=False):
         path = format_path(self._cli.current_path, path)
         result = self._zookeeper.list(path)
 
@@ -62,10 +62,10 @@ class ZooCLICommands(Commands):
     @command
     def set(self, path=None, data=None):
         if not path:
-            raise CLIException("Missing node path")
+            raise MissingArgument("Missing node path")
 
         if not data:
-            raise CLIException("Missing data")
+            raise MissingArgument("Missing data")
 
         path = format_path(self._cli.current_path, path)
 
@@ -97,7 +97,7 @@ class ZooCLICommands(Commands):
     @command
     def create(self, path=None, data=None, ephemeral=False, sequence=False, makepath=False):
         if not path:
-            raise CLIException("Missing node path")
+            raise MissingArgument("Missing node path")
 
         path = format_path(self._cli.current_path, path)
 
@@ -107,7 +107,7 @@ class ZooCLICommands(Commands):
     @command
     def rm(self, path=None, recursive=False):
         if not path:
-            raise CLIException("Missing node path")
+            raise MissingArgument("Missing node path")
 
         path = format_path(self._cli.current_path, path)
 

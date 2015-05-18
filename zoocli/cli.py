@@ -44,8 +44,10 @@ class ZooCLI(object):
             try:
                 command = input(self._format_prompt())
                 if command:
-                    self.execute(shlex.split(command))
-            except UnknownCommand as exc:
+                    result = self.execute(*shlex.split(command))
+                    if result:
+                        print(result)
+            except CLIException as exc:
                 print(exc)
             except (KeyboardInterrupt, EOFError):
                 self._running = False
@@ -59,24 +61,13 @@ class ZooCLI(object):
         return "[{path}]{prompt}".format(path=self._current_path,
                                          prompt=PROMPT)
 
-    def execute(self, args):
-        """Executes single command and prints result, if any."""
-        command, kwargs = self.parse(args)
+    def execute(self, *args):
+        """Executes single command and returns result."""
+        command, kwargs = self.parse(*args)
+        return self._commands.execute(command, **kwargs)
 
-        try:
-            result = self._commands.execute(command, **kwargs)
-            if result:
-                print(result)
-            return 0
-        except CLIException as exc:
-            print(exc)
-            return 1
-        except Exception:
-            traceback.print_exc()
-            return 2
-
-    def parse(self, args):
-        parsed = self._args.parse(args)
+    def parse(self, *args):
+        parsed = self._args.parse(*args)
         kwargs = dict(parsed._get_kwargs())
 
         command = kwargs.pop('command')

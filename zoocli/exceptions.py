@@ -16,3 +16,7 @@ class HostConfigError(CLIException):
 
 class InvalidPath(CLIException):
     pass
+
+
+class MissingArgument(CLIException):
+    pass

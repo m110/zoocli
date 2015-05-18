@@ -84,7 +84,7 @@ class Args(object):
         command.set_defaults(command=name, **kwargs)
         return command
 
-    def parse(self, args):
+    def parse(self, *args):
         return self._parser.parse_args(args)
 
     @property

@@ -15,7 +15,7 @@ class Completer(object):
         buffer = readline.get_line_buffer()
 
         if ' ' in buffer.lstrip():
-            command, kwargs = self._cli.parse(buffer.split())
+            command, kwargs = self._cli.parse(*buffer.split())
 
             method = self._completions.get(command, self.ls)
             completions = method(**kwargs)

@@ -5,13 +5,22 @@ from zoocli.config import load_config
 load_config()
 
 from zoocli.cli import ZooCLI
+from zoocli.exceptions import CLIException
 
 
 def main():
     cli = ZooCLI()
 
     if len(sys.argv) > 1:
-        return cli.execute(sys.argv[1:])
+        try:
+            result = cli.execute(*sys.argv[1:])
+            if result:
+                print(result)
+
+            return 0
+        except CLIException as exc:
+            print(exc)
+            return 1
     else:
         return cli.run()
 
