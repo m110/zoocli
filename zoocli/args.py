@@ -37,6 +37,7 @@ class Args(object):
 
         editor = self._add_command(config['zoocli']['editor'], "edit node's data in the best editor possible")
         editor.add_argument("path", nargs="?", help="node to be edited")
+        editor.set_defaults(command='editor')
 
         create = self._add_command("create", "create new node")
         create.add_argument("path", nargs="?", default=None,  help="node path")

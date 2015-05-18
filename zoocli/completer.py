@@ -20,7 +20,7 @@ class Completer(object):
             method = self._completions.get(command, self.ls)
             completions = method(**kwargs)
         else:
-            completions = [command.name for command in self._cli.commands]
+            completions = [command.name for command in self._cli.args.commands]
 
         completions = [c for c in completions
                        if c.startswith(text)]
@@ -38,4 +38,4 @@ class Completer(object):
             if absolute:
                 path = ROOT_PATH + path
 
-        return self._cli.ls(path=path).split()
+        return self._cli.commands.ls(path=path).split()
