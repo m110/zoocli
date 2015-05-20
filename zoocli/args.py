@@ -66,6 +66,10 @@ class Args(object):
         rmacl.add_argument("path", nargs="?", default=None,  help="node path")
         rmacl.add_argument("index", nargs="?", default=None, help="ACL index")
 
+        find = self._add_command("find", "find all sub-nodes")
+        find.add_argument("path", nargs="?", default=None,  help="node path")
+        find.add_argument("-name", nargs="?", default=None, help="name pattern", dest="name_filter")
+
         help = self._add_command("help", "show this help",
                                  parser=self._parser, all_commands=self._commands)
         help.add_argument("subject", nargs="?", default=None)

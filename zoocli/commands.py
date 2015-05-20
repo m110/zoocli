@@ -1,4 +1,5 @@
 import os
+import re
 import atexit
 import tempfile
 
@@ -179,6 +180,34 @@ class ZooCLICommands(Commands):
         deleted = self._zookeeper.delete_acl(path, index)
 
         self._cli.log("Deleted ACL from {}: {} {}".format(path, deleted.id.scheme, deleted.id.id))
+
+    @command
+    def find(self, path=None, name_filter=None):
+        path = format_path(self._cli.current_path, path)
+
+        def filter_matches(name):
+            return not name_filter or re.search(r"^{}$".format(name_filter), name)
+
+        def list_deep(root):
+            subnodes = []
+            for child in self._zookeeper.list(root):
+                child_path = os.path.join(root, child)
+
+                if filter_matches(child):
+                    subnodes.append(child_path)
+
+                subnodes.extend(list_deep(child_path))
+
+            return subnodes
+
+        result = []
+        name = path.split('/')[-1]
+        if filter_matches(name):
+            result.append(path)
+
+        result.extend(list_deep(path))
+
+        return "\n".join(result)
 
     @command
     def help(self, parser, all_commands, subject):
