@@ -30,6 +30,19 @@ def command(function):
     return function
 
 
+def using_path(required=False, default=None):
+    def wrapper(function):
+        def inner(self, path, **kwargs):
+            if required and not path:
+                raise MissingArgument("Missing node path")
+
+            path = format_path(self._cli.current_path, path, default=default)
+            return function(self, path, **kwargs)
+
+        return inner
+    return wrapper
+
+
 class ZooCLICommands(Commands):
 
     def __init__(self, cli):
@@ -38,44 +51,38 @@ class ZooCLICommands(Commands):
         atexit.register(self._zookeeper.stop)
 
     @command
+    @using_path()
     def ls(self, path=None, long=False):
-        path = format_path(self._cli.current_path, path)
         result = self._zookeeper.list(path)
 
         separator = "\n" if long else " "
         return separator.join(sorted(result))
 
     @command
+    @using_path(default=ROOT_PATH)
     def cd(self, path=None):
-        path = format_path(self._cli.current_path, path, default=ROOT_PATH)
-
         # No exception means correct path
         self._zookeeper.list(path)
         self._cli.set_current_path(path)
 
     @command
+    @using_path()
     def get(self, path=None):
-        path = format_path(self._cli.current_path, path)
-
         data = self._zookeeper.get(path)
         return data
 
     @command
+    @using_path(required=True)
     def set(self, path=None, data=None):
-        if not path:
-            raise MissingArgument("Missing node path")
-
         if not data:
             raise MissingArgument("Missing data")
-
-        path = format_path(self._cli.current_path, path)
 
         self._zookeeper.set(path, data)
         self._cli.log("Set {} data: {}".format(path, data))
 
     @command
+    @using_path()
     def editor(self, path):
-        path = format_path(self._cli.current_path, path)
         data = self._zookeeper.get(path)
 
         tmp_file = tempfile.mktemp()
@@ -96,29 +103,20 @@ class ZooCLICommands(Commands):
         os.unlink(tmp_file)
 
     @command
+    @using_path(required=True)
     def create(self, path=None, data=None, ephemeral=False, sequence=False, makepath=False):
-        if not path:
-            raise MissingArgument("Missing node path")
-
-        path = format_path(self._cli.current_path, path)
-
         self._zookeeper.create(path, data, ephemeral, sequence, makepath)
         self._cli.log("Created: {}".format(path))
 
     @command
+    @using_path(required=True)
     def rm(self, path=None, recursive=False):
-        if not path:
-            raise MissingArgument("Missing node path")
-
-        path = format_path(self._cli.current_path, path)
-
         self._zookeeper.delete(path, recursive)
         self._cli.log("Removed: {}".format(path))
 
     @command
+    @using_path()
     def stat(self, path=None):
-        path = format_path(self._cli.current_path, path)
-
         stat = self._zookeeper.stat(path)
 
         lines = ["Created: {created} by session id: {created_id}",
@@ -146,8 +144,8 @@ class ZooCLICommands(Commands):
         )
 
     @command
+    @using_path()
     def getacl(self, path=None):
-        path = format_path(self._cli.current_path, path)
         current_acl = self._zookeeper.get_acl(path)
 
         lines = []
@@ -160,31 +158,24 @@ class ZooCLICommands(Commands):
         return "\n".join(lines)
 
     @command
+    @using_path(required=True)
     def addacl(self, permissions=None, path=None, scheme=None, id=None):
-        if not path:
-            raise CLIException("Missing node path")
-
-        path = format_path(self._cli.current_path, path)
         self._zookeeper.add_acl(path, permissions, scheme, id)
 
         self._cli.log("Added ACL to {}: {}:{} ({})".format(path, scheme, id, permissions))
 
     @command
+    @using_path(required=True)
     def rmacl(self, path=None, index=None):
-        if not path:
-            raise CLIException("Missing node path")
-
         index = int(index)
 
-        path = format_path(self._cli.current_path, path)
         deleted = self._zookeeper.delete_acl(path, index)
 
         self._cli.log("Deleted ACL from {}: {} {}".format(path, deleted.id.scheme, deleted.id.id))
 
     @command
+    @using_path()
     def find(self, path=None, name_filter=None):
-        path = format_path(self._cli.current_path, path)
-
         def filter_matches(name):
             return not name_filter or re.search(r"^{}$".format(name_filter), name)
 
