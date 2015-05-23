@@ -1,11 +1,8 @@
 #!/usr/bin/python3
 import sys
+from climb.exceptions import CLIException
 
-from zoocli.config import load_config
-load_config()
-
-from zoocli.cli import ZooCLI
-from zoocli.exceptions import CLIException
+from zoocli import ZooCLI
 
 
 def main():
@@ -22,7 +19,8 @@ def main():
             print(exc)
             return 1
     else:
-        return cli.run()
+        cli.run()
+        return 0
 
 
 if __name__ == "__main__":

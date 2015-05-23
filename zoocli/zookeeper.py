@@ -2,7 +2,6 @@ from kazoo.client import KazooClient
 from kazoo.exceptions import NoNodeError, NodeExistsError, NotEmptyError, InvalidACLError
 from kazoo.security import make_acl, make_digest_acl
 
-from zoocli.config import config
 from zoocli.exceptions import InvalidPath
 
 PERMS_MAP = {
@@ -19,12 +18,10 @@ def get_permissions(permissions):
 
 class ZooKeeper(object):
 
-    def __init__(self):
-        self._zookeeper = KazooClient(hosts=config['zookeeper']['hosts'])
+    def __init__(self, hosts, user=None, password=None):
+        self._zookeeper = KazooClient(hosts=hosts)
         self._zookeeper.start()
 
-        user = config['zookeeper']['user']
-        password = config['zookeeper']['password']
         if user and password:
             self._zookeeper.add_auth('digest', '{}:{}'.format(user, password))
 

@@ -2,32 +2,12 @@ import os
 import re
 import atexit
 import tempfile
+from climb.commands import Commands, command
+from climb.exceptions import MissingArgument
+from climb.paths import ROOT_PATH, format_path
 
-from zoocli.config import config
-from zoocli.exceptions import UnknownCommand, CLIException, MissingArgument
-from zoocli.paths import ROOT_PATH, format_path
 from zoocli.utils import timestamp_to_date
 from zoocli.zookeeper import ZooKeeper
-
-
-class Commands(object):
-
-    def __init__(self, cli):
-        self._cli = cli
-        self._commands = {}
-
-    def execute(self, name, *args, **kwargs):
-        if hasattr(self, name):
-            method = getattr(self, name)
-            if getattr(method, 'command', None):
-                return method(*args, **kwargs)
-
-        raise UnknownCommand("There is no action for command {}".format(command))
-
-
-def command(function):
-    function.command = True
-    return function
 
 
 def using_path(required=False, default=None):
@@ -43,11 +23,13 @@ def using_path(required=False, default=None):
     return wrapper
 
 
-class ZooCLICommands(Commands):
+class ZooCommands(Commands):
 
     def __init__(self, cli):
         super().__init__(cli)
-        self._zookeeper = ZooKeeper()
+
+        config = cli.config['zookeeper']
+        self._zookeeper = ZooKeeper(**config)
         atexit.register(self._zookeeper.stop)
 
     @command
@@ -90,7 +72,7 @@ class ZooCLICommands(Commands):
         with open(tmp_file, 'w') as file:
             file.write(data)
 
-        cmd = "{} {}".format(config['zoocli']['editor'], tmp_file)
+        cmd = "{} {}".format(self._cli.config['zoocli']['editor'], tmp_file)
         exit_status = os.system(cmd)
 
         if not exit_status:
@@ -199,17 +181,3 @@ class ZooCLICommands(Commands):
         result.extend(list_deep(path))
 
         return "\n".join(result)
-
-    @command
-    def help(self, parser, all_commands, subject):
-        if subject:
-            subparsers = [cmd for cmd in all_commands
-                          if cmd.name == subject]
-            if subparsers:
-                parser = subparsers[0].parser
-
-        return parser.print_help()
-
-    @command
-    def exit(self):
-        self._cli.set_running(False)

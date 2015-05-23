@@ -1,18 +1,11 @@
 #!/usr/bin/python3
-import os
-import sys
 import unittest
 from unittest.mock import patch
 from kazoo.exceptions import NoNodeError
+from climb.exceptions import MissingArgument
 
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/../')
-
-from zoocli.config import load_config
-
-load_config('../zoocli.example.conf')
-
-from zoocli.cli import ZooCLI
-from zoocli.exceptions import InvalidPath, MissingArgument
+from zoocli import ZooCLI
+from zoocli.exceptions import InvalidPath
 
 
 class CommandsTest(unittest.TestCase):

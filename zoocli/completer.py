@@ -1,36 +1,13 @@
-import readline
+from climb.completer import Completer
+from climb.paths import SEPARATOR, ROOT_PATH
 
-from zoocli.paths import SEPARATOR, ROOT_PATH
 
+class ZooCompleter(Completer):
 
-class Completer(object):
+    def _default_completer(self):
+        return self._list
 
-    def __init__(self, cli):
-        self._cli = cli
-        self._completions = {}
-
-    def complete(self, text, state):
-        completions = []
-
-        buffer = readline.get_line_buffer()
-
-        if ' ' in buffer.lstrip():
-            command, kwargs = self._cli.parse(*buffer.split())
-
-            method = self._completions.get(command, self.ls)
-            completions = method(**kwargs)
-        else:
-            completions = [command.name for command in self._cli.args.commands]
-
-        completions = [c for c in completions
-                       if c.startswith(text)]
-
-        if state < len(completions):
-            return completions[state]
-        else:
-            return None
-
-    def ls(self, path=None, **kwargs):
+    def _list(self, path=None, **kwargs):
         if path and not path.endswith(SEPARATOR):
             # List one level up
             absolute = path.startswith(ROOT_PATH)
