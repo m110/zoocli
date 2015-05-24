@@ -1,7 +1,7 @@
 # zoocli
 Interactive command line tool for [Apache ZooKeeper](https://zookeeper.apache.org/).
 
-**Note that this is still WIP and features described here may be not implemented at the moment.**
+**Note that this is alpha software.**
 
 ## Featuring:
 
@@ -19,18 +19,25 @@ Because I couldn't find interactive CLI that would suit my needs.
 ## Requirements
 
 * [Python 3](http://python.org)
+* [climb](https://github.com/m110/climb)
 * [kazoo](https://github.com/python-zk/kazoo/)
 
 ## Installation
 
-Get the source and run:
+```
+pip3 install zoocli
+```
+
+or get the source and run:
 
 ```
 python3 setup.py install
-cp /etc/zoocli/zoocli.example.conf /etc/zoocli/zoocli.conf
 ```
 
 Then update config file to match your preferences.
+```
+cp /etc/zoocli/zoocli.conf.example /etc/zoocli/zoocli.conf
+```
 
 # Usage
 
