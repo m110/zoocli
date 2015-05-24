@@ -1,4 +1,5 @@
 from climb.args import Args
+from climb.config import config
 
 
 class ZooArgs(Args):
@@ -18,7 +19,7 @@ class ZooArgs(Args):
         set.add_argument("path", nargs="?", default=None,  help="node path")
         set.add_argument("data", nargs="?", default=None,  help="data to set")
 
-        editor = self._add_command(self._cli.config['zoocli']['editor'], "edit node's data in the best editor possible")
+        editor = self._add_command(config['zoocli']['editor'], "edit node's data in the best editor possible")
         editor.add_argument("path", nargs="?", help="node to be edited")
         editor.set_defaults(command='editor')
 

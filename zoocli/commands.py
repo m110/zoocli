@@ -5,6 +5,7 @@ import tempfile
 from climb.commands import Commands, command
 from climb.exceptions import MissingArgument
 from climb.paths import ROOT_PATH, format_path
+from climb.config import config
 
 from zoocli.utils import timestamp_to_date
 from zoocli.zookeeper import ZooKeeper
@@ -28,8 +29,7 @@ class ZooCommands(Commands):
     def __init__(self, cli):
         super().__init__(cli)
 
-        config = cli.config['zookeeper']
-        self._zookeeper = ZooKeeper(**config)
+        self._zookeeper = ZooKeeper(**config['zookeeper'])
         atexit.register(self._zookeeper.stop)
 
     @command
@@ -72,7 +72,7 @@ class ZooCommands(Commands):
         with open(tmp_file, 'w') as file:
             file.write(data)
 
-        cmd = "{} {}".format(self._cli.config['zoocli']['editor'], tmp_file)
+        cmd = "{} {}".format(config['zoocli']['editor'], tmp_file)
         exit_status = os.system(cmd)
 
         if not exit_status:
