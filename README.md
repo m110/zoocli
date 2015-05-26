@@ -68,7 +68,7 @@ baz
 * `getacl <path>` - get node's ACL
 * `addacl <path> <permissions> <scheme> <id>` - add ACL to node
 * `rmacl <path> <index>` - delete node's ACL
-* `find <path> [-name pattern]` - find all sub-nodes
+* `find <path> [-name pattern] [-mindepth levels] [-maxdepth levels]` - find all sub-nodes
 
 # Configuration
 

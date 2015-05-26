@@ -53,3 +53,5 @@ class ZooArgs(Args):
         find = self._add_command("find", "find all sub-nodes")
         find.add_argument("path", nargs="?", default=None,  help="node path")
         find.add_argument("-name", nargs="?", default=None, help="name pattern", dest="name_filter")
+        find.add_argument("-mindepth", nargs="?", default=None, help="min depth")
+        find.add_argument("-maxdepth", nargs="?", default=None, help="max depth")

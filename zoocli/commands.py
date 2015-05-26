@@ -3,7 +3,7 @@ import re
 import atexit
 import tempfile
 from climb.commands import Commands, command
-from climb.exceptions import MissingArgument
+from climb.exceptions import MissingArgument, CLIException
 from climb.paths import ROOT_PATH, format_path
 from climb.config import config
 
@@ -157,27 +157,49 @@ class ZooCommands(Commands):
 
     @command
     @using_path()
-    def find(self, path=None, name_filter=None):
+    def find(self, path=None, name_filter=None, mindepth=None, maxdepth=None):
+        def filter_depth(depth):
+            if depth is None:
+                return None
+
+            try:
+                depth = int(depth)
+            except ValueError:
+                raise CLIException("Depth has to be an integer")
+
+            if depth < 0:
+                raise CLIException("Depth can't be negative")
+
+            return depth
+
         def filter_matches(name):
             return not name_filter or re.search(r"^{}$".format(name_filter), name)
 
-        def list_deep(root):
+        def list_deep(root, depth):
+            if maxdepth is not None and depth > maxdepth:
+                return []
+
             subnodes = []
             for child in self._zookeeper.list(root):
                 child_path = os.path.join(root, child)
 
-                if filter_matches(child):
-                    subnodes.append(child_path)
+                if mindepth is None or depth >= mindepth:
+                    if filter_matches(child):
+                        subnodes.append(child_path)
 
-                subnodes.extend(list_deep(child_path))
+                subnodes.extend(list_deep(child_path, depth + 1))
 
             return subnodes
 
-        result = []
-        name = path.split('/')[-1]
-        if filter_matches(name):
-            result.append(path)
+        mindepth = filter_depth(mindepth)
+        maxdepth = filter_depth(maxdepth)
 
-        result.extend(list_deep(path))
+        result = []
+        if mindepth is None or mindepth == 0:
+            name = path.split('/')[-1]
+            if filter_matches(name):
+                result.append(path)
+
+        result.extend(list_deep(path, 1))
 
         return "\n".join(result)
