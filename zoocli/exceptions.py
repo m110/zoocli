@@ -1,5 +1,5 @@
 from climb.exceptions import CLIException
 
 
-class InvalidPath(CLIException):
+class ZooKeeperException(CLIException):
     pass

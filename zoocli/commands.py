@@ -7,6 +7,7 @@ from climb.exceptions import MissingArgument, CLIException
 from climb.paths import ROOT_PATH, format_path
 from climb.config import config
 
+from zoocli.exceptions import ZooKeeperException
 from zoocli.utils import timestamp_to_date
 from zoocli.zookeeper import ZooKeeper
 
@@ -179,8 +180,14 @@ class ZooCommands(Commands):
             if maxdepth is not None and depth > maxdepth:
                 return []
 
+            try:
+                child_list = self._zookeeper.list(root)
+            except ZooKeeperException as exc:
+                print(exc)
+                return []
+
             subnodes = []
-            for child in self._zookeeper.list(root):
+            for child in child_list:
                 child_path = os.path.join(root, child)
 
                 if mindepth is None or depth >= mindepth:

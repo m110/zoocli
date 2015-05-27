@@ -2,7 +2,7 @@ from kazoo.client import KazooClient
 from kazoo.exceptions import NoNodeError, NodeExistsError, NotEmptyError, InvalidACLError, NoAuthError
 from kazoo.security import make_acl, make_digest_acl
 
-from zoocli.exceptions import InvalidPath
+from zoocli.exceptions import ZooKeeperException
 
 PERMS_MAP = {
     'a': 'admin',
@@ -35,9 +35,9 @@ class ZooKeeper(object):
         try:
             return self._zookeeper.get_children(path)
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except NoAuthError:
-            raise InvalidPath("No access to list node: {}".format(path))
+            raise ZooKeeperException("No access to list node: {}".format(path))
 
     def get(self, path):
         try:
@@ -49,17 +49,17 @@ class ZooKeeper(object):
 
             return value
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except NoAuthError:
-            raise InvalidPath("No access to get node: {}".format(path))
+            raise ZooKeeperException("No access to get node: {}".format(path))
 
     def set(self, path, data):
         try:
             self._zookeeper.set(path, data.encode())
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except NoAuthError:
-            raise InvalidPath("No access to set data on node: {}".format(path))
+            raise ZooKeeperException("No access to set data on node: {}".format(path))
 
     def create(self, path, data=None, ephemeral=False, sequence=False, makepath=False):
         if data:
@@ -74,35 +74,35 @@ class ZooKeeper(object):
                                    sequence=sequence,
                                    makepath=makepath)
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except NodeExistsError:
-            raise InvalidPath("Node already exists: {}".format(path))
+            raise ZooKeeperException("Node already exists: {}".format(path))
         except NoAuthError:
-            raise InvalidPath("No access to create node: {}".format(path))
+            raise ZooKeeperException("No access to create node: {}".format(path))
 
     def delete(self, path, recursive=False):
         try:
             self._zookeeper.delete(path, recursive=recursive)
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except NotEmptyError:
-            raise InvalidPath("Node contains sub-nodes")
+            raise ZooKeeperException("Node contains sub-nodes")
         except NoAuthError:
-            raise InvalidPath("No access to delete node: {}".format(path))
+            raise ZooKeeperException("No access to delete node: {}".format(path))
 
     def stat(self, path):
         try:
             _, stat = self._zookeeper.get(path)
             return stat
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
 
     def get_acl(self, path):
         try:
             acl, _ = self._zookeeper.get_acls(path)
             return acl
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
 
     def add_acl(self, path, permissions, scheme, id):
         perms = get_permissions(permissions)
@@ -119,11 +119,11 @@ class ZooKeeper(object):
         try:
             self._zookeeper.set_acls(path, current_acls)
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except InvalidACLError as exc:
-            raise InvalidPath("Invalid ACL format: {}".format(str(exc)))
+            raise ZooKeeperException("Invalid ACL format: {}".format(str(exc)))
         except NoAuthError:
-            raise InvalidPath("No access to add acl on node: {}".format(path))
+            raise ZooKeeperException("No access to add acl on node: {}".format(path))
 
     def delete_acl(self, path, index):
         current_acls = self.get_acl(path)
@@ -132,8 +132,8 @@ class ZooKeeper(object):
         try:
             self._zookeeper.set_acls(path, current_acls)
         except NoNodeError:
-            raise InvalidPath("No such node: {}".format(path))
+            raise ZooKeeperException("No such node: {}".format(path))
         except NoAuthError:
-            raise InvalidPath("No access to delete acl from node: {}".format(path))
+            raise ZooKeeperException("No access to delete acl from node: {}".format(path))
 
         return deleted

@@ -5,7 +5,7 @@ from kazoo.exceptions import NoNodeError
 from climb.exceptions import MissingArgument
 
 from zoocli import ZooCLI
-from zoocli.exceptions import InvalidPath
+from zoocli.exceptions import ZooKeeperException
 
 
 class CommandsTest(unittest.TestCase):
@@ -37,7 +37,7 @@ class CommandsTest(unittest.TestCase):
         self.assertEqual(self.cli.current_path, '/any_node')
 
         self.zookeeper.get_children.side_effect = NoNodeError
-        with self.assertRaises(InvalidPath):
+        with self.assertRaises(ZooKeeperException):
             self.cli.execute('cd', '/invalid_node')
 
     def test_get(self):
