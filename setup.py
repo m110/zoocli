@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='zoocli',
-      version='0.2.0',
+      version='0.2.1',
       description='Interactive ZooKeeper CLI tool.',
       author='Milosz Smolka',
       author_email='m110@m110.pl',
@@ -10,7 +10,7 @@ setup(name='zoocli',
       packages=find_packages(exclude=['tests']),
       scripts=['scripts/zoocli'],
       data_files=[('/etc/zoocli', ['zoocli.conf.example'])],
-      requires=['climb', 'kazoo'],
+      install_requires=['climb', 'kazoo'],
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Environment :: Console',
