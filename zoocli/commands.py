@@ -2,7 +2,7 @@ import os
 import re
 import atexit
 import tempfile
-from climb.commands import Commands, command
+from climb.commands import Commands, command, completers
 from climb.exceptions import MissingArgument, CLIException
 from climb.paths import ROOT_PATH, format_path
 from climb.config import config
@@ -34,6 +34,7 @@ class ZooCommands(Commands):
         atexit.register(self._zookeeper.stop)
 
     @command
+    @completers('path')
     @using_path()
     def ls(self, path=None, long=False):
         result = self._zookeeper.list(path)
@@ -42,6 +43,7 @@ class ZooCommands(Commands):
         return separator.join(sorted(result))
 
     @command
+    @completers('path')
     @using_path(default=ROOT_PATH)
     def cd(self, path=None):
         # No exception means correct path
@@ -49,12 +51,14 @@ class ZooCommands(Commands):
         self._cli.set_current_path(path)
 
     @command
+    @completers('path')
     @using_path()
     def get(self, path=None):
         data = self._zookeeper.get(path)
         return data
 
     @command
+    @completers('path')
     @using_path(required=True)
     def set(self, path=None, data=None):
         if not data:
@@ -64,6 +68,7 @@ class ZooCommands(Commands):
         self._cli.log("Set {} data: {}".format(path, data))
 
     @command
+    @completers('path')
     @using_path()
     def editor(self, path):
         data = self._zookeeper.get(path)
@@ -86,18 +91,21 @@ class ZooCommands(Commands):
         os.unlink(tmp_file)
 
     @command
+    @completers('path')
     @using_path(required=True)
     def create(self, path=None, data=None, ephemeral=False, sequence=False, makepath=False):
         self._zookeeper.create(path, data, ephemeral, sequence, makepath)
         self._cli.log("Created: {}".format(path))
 
     @command
+    @completers('path')
     @using_path(required=True)
     def rm(self, path=None, recursive=False):
         self._zookeeper.delete(path, recursive)
         self._cli.log("Removed: {}".format(path))
 
     @command
+    @completers('path')
     @using_path()
     def stat(self, path=None):
         stat = self._zookeeper.stat(path)
@@ -127,6 +135,7 @@ class ZooCommands(Commands):
         )
 
     @command
+    @completers('path')
     @using_path()
     def getacl(self, path=None):
         current_acl = self._zookeeper.get_acl(path)
@@ -141,6 +150,7 @@ class ZooCommands(Commands):
         return "\n".join(lines)
 
     @command
+    @completers('path')
     @using_path(required=True)
     def addacl(self, permissions=None, path=None, scheme=None, id=None):
         self._zookeeper.add_acl(path, permissions, scheme, id)
@@ -148,6 +158,7 @@ class ZooCommands(Commands):
         self._cli.log("Added ACL to {}: {}:{} ({})".format(path, scheme, id, permissions))
 
     @command
+    @completers('path')
     @using_path(required=True)
     def rmacl(self, path=None, index=None):
         index = int(index)
@@ -157,6 +168,7 @@ class ZooCommands(Commands):
         self._cli.log("Deleted ACL from {}: {} {}".format(path, deleted.id.scheme, deleted.id.id))
 
     @command
+    @completers('path')
     @using_path()
     def find(self, path=None, name_filter=None, mindepth=None, maxdepth=None):
         def filter_depth(depth):
