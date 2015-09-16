@@ -10,4 +10,5 @@ ZooCLI = partial(Climb,
                  'zoocli',
                  args=ZooArgs,
                  commands=ZooCommands,
-                 completer=ZooCompleter)
+                 completer=ZooCompleter,
+                 skip_delims=['-'])
