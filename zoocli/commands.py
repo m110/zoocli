@@ -65,7 +65,7 @@ class ZooCommands(Commands):
             raise MissingArgument("Missing data")
 
         self._zookeeper.set(path, data)
-        self._cli.log("Set {} data: {}".format(path, data))
+        self._cli.log("Set {} data: {}", path, data)
 
     @command
     @completers('path')
@@ -82,7 +82,7 @@ class ZooCommands(Commands):
         exit_status = os.system(cmd)
 
         if not exit_status:
-            self._cli.log("Updating: {}".format(path))
+            self._cli.log("Updating: {}", path)
 
             with open(tmp_file, 'r') as file:
                 new_data = file.read().rstrip()
@@ -95,14 +95,14 @@ class ZooCommands(Commands):
     @using_path(required=True)
     def create(self, path=None, data=None, ephemeral=False, sequence=False, makepath=False):
         self._zookeeper.create(path, data, ephemeral, sequence, makepath)
-        self._cli.log("Created: {}".format(path))
+        self._cli.log("Created: {}", path)
 
     @command
     @completers('path')
     @using_path(required=True)
     def rm(self, path=None, recursive=False):
         self._zookeeper.delete(path, recursive)
-        self._cli.log("Removed: {}".format(path))
+        self._cli.log("Removed: {}", path)
 
     @command
     @completers('path')
@@ -155,7 +155,7 @@ class ZooCommands(Commands):
     def addacl(self, permissions=None, path=None, scheme=None, id=None):
         self._zookeeper.add_acl(path, permissions, scheme, id)
 
-        self._cli.log("Added ACL to {}: {}:{} ({})".format(path, scheme, id, permissions))
+        self._cli.log("Added ACL to {}: {}:{} ({})", path, scheme, id, permissions)
 
     @command
     @completers('path')
@@ -165,7 +165,7 @@ class ZooCommands(Commands):
 
         deleted = self._zookeeper.delete_acl(path, index)
 
-        self._cli.log("Deleted ACL from {}: {} {}".format(path, deleted.id.scheme, deleted.id.id))
+        self._cli.log("Deleted ACL from {}: {} {}", path, deleted.id.scheme, deleted.id.id)
 
     @command
     @completers('path')
